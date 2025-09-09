@@ -2,88 +2,590 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Health Chatbot — India Demo</title>
+  <title>ArogyaGPT — Health Chatbot Demo (Animated)</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; background:#f7f8fb; color:#111 }
-    .card { background:white; border-radius:10px; padding:18px; box-shadow:0 6px 18px rgba(24,39,75,0.06); max-width:900px; margin:auto }
-    input[type="text"]{ padding:10px; width:60%; border-radius:8px; border:1px solid #ddd }
-    button{ padding:10px 14px; border-radius:8px; border:0; background:#2563eb; color:white; cursor:pointer }
-    .meta { color:#666; font-size:13px }
-    ul { margin-left:18px }
-    pre { background:#111; color:#fff; padding:12px; border-radius:6px; overflow:auto }
+    :root{
+      --bg-1: #071024;
+      --bg-2: #0b1220;
+      --muted: #94a3b8;
+      --accent-a: #06b6d4;
+      --accent-b: #7c3aed;
+      --glass: rgba(255,255,255,0.03);
+      --white: #e6eef8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --card-glow: rgba(96,165,250,0.06);
+    }
+
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(79,70,229,0.06), transparent 10%),
+                  linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 60%);
+      color:var(--white);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .container{
+      width:100%;
+      max-width:1150px;
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:22px;
+      align-items:start;
+    }
+
+    /* Left panel (chat) */
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;
+      padding:18px;
+      box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+      border: 1px solid rgba(255,255,255,0.04);
+      display:flex;
+      flex-direction:column;
+      height:680px;
+      overflow:hidden;
+      transform: translateY(0);
+      animation:panelEntrance .6s cubic-bezier(.2,.9,.3,1);
+    }
+    @keyframes panelEntrance{
+      from { transform: translateY(10px); opacity:0 }
+      to { transform: translateY(0); opacity:1 }
+    }
+
+    .header{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      margin-bottom:8px;
+    }
+    .avatar{
+      width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--accent-a),var(--accent-b));
+      display:flex;align-items:center;justify-content:center;font-weight:800;color:#021226;font-size:16px;
+      box-shadow:0 8px 30px rgba(79,70,229,0.12);
+    }
+    .title{font-size:19px;font-weight:700}
+    .subtitle{font-size:13px;color:var(--muted)}
+
+    .chat{
+      flex:1;
+      overflow:auto;
+      padding-right:6px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:8px;
+      scroll-behavior: smooth;
+    }
+
+    .bubble{
+      max-width:86%;
+      padding:12px 14px;
+      border-radius:12px;
+      line-height:1.45;
+      word-wrap:break-word;
+      white-space:pre-wrap;
+      transform-origin: center;
+      animation:popIn .28s ease;
+    }
+    @keyframes popIn{
+      from { transform: scale(.98); opacity:0; filter:blur(4px) }
+      to { transform: scale(1); opacity:1; filter:blur(0) }
+    }
+    .bot{ background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02)); color:var(--white); align-self:flex-start; border-top-left-radius:4px; box-shadow: 0 6px 18px rgba(2,6,23,0.25); }
+    .user{ background: linear-gradient(180deg,#065f46,#047857); color: #e6fff6; align-self:flex-end; border-top-right-radius:4px; box-shadow: 0 6px 18px rgba(4,8,6,0.25); transform-origin: right center; }
+
+    .meta-line{ font-size:12px; color:var(--muted); margin-top:6px; display:flex; gap:8px; align-items:center;}
+
+    .input-row{
+      display:flex;
+      gap:8px;
+      margin-top:12px;
+      align-items:center;
+    }
+    .input{
+      flex:1;
+      display:flex;
+      gap:8px;
+      background:var(--glass);
+      padding:10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,0.03);
+      align-items:center;
+      transition: box-shadow .18s ease, transform .08s ease;
+    }
+    .input:focus-within{ box-shadow: 0 8px 30px rgba(6,11,18,0.45); transform: translateY(-1px); }
+    .input input[type="text"]{
+      background:transparent;border:0;outline:0;color:var(--white);font-size:14px;width:100%;
+    }
+    .btn{
+      background:linear-gradient(90deg,var(--accent-a),var(--accent-b));
+      border:0;padding:10px 14px;border-radius:10px;color:#021226;font-weight:700;cursor:pointer;
+      box-shadow:0 12px 30px rgba(79,70,229,0.12);
+      transition: transform .08s linear, box-shadow .08s linear;
+    }
+    .btn:active{ transform:translateY(1px); box-shadow:0 6px 18px rgba(79,70,229,0.06); }
+
+    /* Right panel (results & details) */
+    .panel-right{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:16px;padding:18px;border:1px solid rgba(255,255,255,0.04);height:680px;overflow:auto;
+      position:relative;
+      box-shadow:0 10px 40px rgba(2,6,23,0.6);
+    }
+    .panel-right::before{
+      content:"";
+      position:absolute; inset:0; border-radius:16px;
+      background: linear-gradient(120deg, rgba(6,182,212,0.02), rgba(124,58,237,0.02));
+      pointer-events:none;
+      mix-blend-mode:overlay;
+    }
+
+    .result-card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02));
+      border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,0.02);
+      color:var(--white);
+      box-shadow: 0 8px 30px rgba(2,6,23,0.45);
+      position:relative;
+      overflow:visible;
+    }
+    /* animated glowing border */
+    .result-card::after{
+      content:""; position:absolute; inset:-2px; border-radius:14px; z-index:-1;
+      background: linear-gradient(90deg, rgba(6,182,212,0.06), rgba(124,58,237,0.06));
+      filter: blur(10px); opacity:0; transition: opacity .35s ease;
+    }
+    .result-card.active::after{ opacity:1; }
+
+    .title-large{font-size:20px;font-weight:800;margin-bottom:6px}
+    .small{font-size:13px;color:var(--muted)}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,0.03);font-weight:700;font-size:13px;margin-left:8px}
+    .badge.pulse{ animation:badgePulse 1.8s infinite ease-in-out; }
+    @keyframes badgePulse{
+      0%{ transform:scale(1); box-shadow:0 0 0 0 rgba(6,182,212,0.04); }
+      50%{ transform:scale(1.03); box-shadow:0 0 20px 6px rgba(6,182,212,0.02); }
+      100%{ transform:scale(1); box-shadow:0 0 0 0 rgba(6,182,212,0.00); }
+    }
+
+    .links a{color:var(--accent-a);text-decoration:none}
+
+    pre.debug{
+      margin-top:14px;background:#061223;padding:12px;border-radius:8px;overflow:auto;font-size:13px;color:var(--muted)
+    }
+
+    /* typing dots */
+    .typing{
+      width:55px;height:22px;display:flex;gap:6px;align-items:center;justify-content:center;
+    }
+    .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.18);opacity:0.2;animation:blink 1.1s infinite}
+    .dot:nth-child(1){animation-delay:0s}
+    .dot:nth-child(2){animation-delay:0.15s}
+    .dot:nth-child(3){animation-delay:0.3s}
+    @keyframes blink{0%{opacity:0.2}40%{opacity:1}100%{opacity:0.2}}
+
+    /* animated summary block */
+    .summary {
+      margin-top:12px;
+      padding:14px;
+      border-radius:10px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 14px 40px rgba(2,6,23,0.45);
+      transform: translateY(6px);
+      opacity:0;
+    }
+    .summary.revealed {
+      transform: translateY(0);
+      opacity:1;
+      transition: all .45s cubic-bezier(.2,.9,.3,1);
+    }
+
+    .summary .assistant{
+      display:flex;gap:10px;align-items:flex-start;
+    }
+    .assistant .icon{
+      width:44px;height:44px;border-radius:10px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));
+      display:flex;align-items:center;justify-content:center;font-weight:700;color:#021226;
+      flex-shrink:0;
+    }
+    .assistant .text{ font-size:15px; line-height:1.45; color:var(--white); }
+
+    /* copy button */
+    .controls { display:flex; gap:8px; align-items:center; margin-top:10px; }
+    .chip { background: rgba(255,255,255,0.03); padding:8px 10px; border-radius:999px; font-weight:600; color:var(--muted); cursor:pointer; border:1px solid rgba(255,255,255,0.02); }
+    .chip:hover{ transform:translateY(-2px); box-shadow:0 10px 30px rgba(2,6,23,0.45); }
+
+    /* small highlight */
+    .highlight { display:inline-block; padding:6px 8px; border-radius:8px; background:linear-gradient(90deg, rgba(6,182,212,0.06), rgba(124,58,237,0.06)); margin-right:8px; font-weight:700 }
+
+    /* responsive */
+    @media (max-width:980px){
+      .container{grid-template-columns:1fr}
+      .panel-right{height:560px}
+      .panel{height:560px}
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>ArogyaGPT</h2>
-    <p class="meta">NCVBDC / NCDC / IDSP sources — informational only.</p>
+  <div class="container" role="main" aria-label="ArogyaGPT health assistant">
+    <div class="panel" id="chatPanel">
+      <div class="header">
+        <div class="avatar" aria-hidden="true">AG</div>
+        <div style="flex:1">
+          <div class="title">ArogyaGPT</div>
+          <div class="subtitle">Trusted info — NCVBDC · NCDC · IDSP (informational)</div>
+        </div>
+      </div>
 
-    <div style="margin-top:12px;">
-      <input id="disease" placeholder="Enter disease (e.g., dengue)" type="text" value="dengue" />
-      <input id="region" placeholder="Region (optional)" type="text" style="margin-left:8px; width:28%" />
-      <button id="ask">Search</button>
+      <div class="chat" id="chat" aria-live="polite" role="log">
+        <!-- messages appended here -->
+      </div>
+
+      <div class="input-row" aria-hidden="false">
+        <div class="input" role="search">
+          <input id="inputBox" type="text" placeholder="Say hi — e.g., 'Tell me about COVID' or type a disease name" aria-label="Ask about disease" />
+        </div>
+        <button class="btn" id="sendBtn" title="Send">Ask</button>
+      </div>
     </div>
 
-    <div id="result" style="margin-top:18px;"></div>
-    <hr />
+    <div class="panel-right" id="rightPanel" aria-live="polite">
+      <div class="result-card" id="resultCard">
+        <div class="title-large">Hello — how can I help you today?</div>
+        <div class="small">Type a disease name or ask a question like <code>Tell me about dengue</code>. Results come from official health surveillance sources where available.</div>
+
+        <div id="resultContent" style="margin-top:14px;">
+          <!-- dynamic result -->
+        </div>
+
+        <div class="controls" style="margin-top:12px">
+          <div class="chip" id="copyBtn" title="Copy summary" style="display:none">Copy Summary</div>
+          <div class="chip" id="toggleDebug">Toggle Debug</div>
+          <div style="flex:1"></div>
+          <div class="small">Fetched: <span id="fetchedAt">—</span></div>
+        </div>
+
+        <pre class="debug" id="debugBox" hidden>{ }</pre>
+      </div>
+    </div>
   </div>
 
 <script>
-document.getElementById("ask").addEventListener("click", async () => {
-  const d = document.getElementById("disease").value.trim();
-  const region = document.getElementById("region").value.trim();
-  if(!d){ alert("Type a disease name (e.g., dengue)"); return; }
-  const payload = { disease: d, region: region || null }
-  document.getElementById("result").innerHTML = "<p class='meta'>Searching...</p>"
-  try {
-    const res = await fetch("/disease_info", {
-      method: "POST",
-      headers: {"Content-Type":"application/json"},
-      body: JSON.stringify(payload)
+  // Helper escape
+  function escapeHtml(s){
+    if(!s && s !== 0) return "";
+    return String(s).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+  }
+
+  // Elements
+  const chat = document.getElementById('chat');
+  const inputBox = document.getElementById('inputBox');
+  const sendBtn = document.getElementById('sendBtn');
+  const resultCard = document.getElementById('resultCard');
+  const resultContent = document.getElementById('resultContent');
+  const debugBox = document.getElementById('debugBox');
+  const copyBtn = document.getElementById('copyBtn');
+  const toggleDebug = document.getElementById('toggleDebug');
+  const fetchedAtEl = document.getElementById('fetchedAt');
+
+  // Initialize: greet with typed effect
+  window.addEventListener('load', async () => {
+    await sleep(250);
+    await addBotTyped("Hello 👋 — I'm ArogyaGPT. I can provide informational summaries about diseases and guidance sourced from NCVBDC / NCDC / IDSP. What would you like to know?");
+    inputBox.focus();
+    addQuickChips();
+  });
+
+  // Small helpers
+  function sleep(ms){ return new Promise(res => setTimeout(res, ms)); }
+
+  // Chat message creation with subtle animate
+  function createBubble(text, cls='bot'){
+    const el = document.createElement('div');
+    el.className = 'bubble ' + cls;
+    el.innerHTML = `<div>${escapeHtml(text)}</div>`;
+    chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+
+  // Add user message
+  function addUserMessage(text){
+    createBubble(text, 'user');
+  }
+
+  // Add bot typed message (typewriter effect inside a bubble)
+  async function addBotTyped(text){
+    const el = document.createElement('div');
+    el.className = 'bubble bot';
+    const inner = document.createElement('div');
+    el.appendChild(inner);
+    chat.appendChild(el);
+    chat.scrollTop = chat.scrollHeight;
+
+    // typewriter
+    inner.textContent = '';
+    const speed = 18; // ms per char
+    for(let i=0;i<text.length;i++){
+      inner.textContent += text[i];
+      if(i % 12 === 0) chat.scrollTop = chat.scrollHeight;
+      await sleep(speed);
+    }
+    chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+
+  // typing bubble (dots)
+  function addTyping(){
+    const el = document.createElement('div');
+    el.className = 'bubble bot';
+    el.id = 'typingBubble';
+    el.innerHTML = `<div class="typing" aria-hidden="true"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+    chat.appendChild(el); chat.scrollTop = chat.scrollHeight;
+    return el;
+  }
+  function removeTyping(){
+    const t = document.getElementById('typingBubble');
+    if(t) t.remove();
+  }
+
+  // Render server result to right panel with typed summary reveal
+  async function renderResultPanel(data){
+    // activate glow
+    resultCard.classList.add('active');
+
+    if(!data){
+      resultContent.innerHTML = `<div class="small">No response received.</div>`;
+      debugBox.hidden = true;
+      fetchedAtEl.textContent = '—';
+      copyBtn.style.display = 'none';
+      return;
+    }
+    fetchedAtEl.textContent = data.fetched_at || new Date().toISOString();
+    debugBox.textContent = JSON.stringify(data.queried_sources || {}, null, 2);
+
+    if(!data.found){
+      resultContent.innerHTML = `<div class="small">${escapeHtml(data.message || "No content found.")}</div>`;
+      copyBtn.style.display = 'none';
+      debugBox.hidden = false;
+      return;
+    }
+
+    const r = data.result || {};
+    // header
+    let headerHtml = `<div style="display:flex;align-items:center;justify-content:space-between">`;
+    headerHtml += `<div><div style="font-size:18px;font-weight:800">${escapeHtml(r.title || data.disease || "Result")}</div>`;
+    headerHtml += `<div class="small" style="margin-top:6px">Source: <a class="links" href="${escapeHtml(r.source_url || '#')}" target="_blank" rel="noopener noreferrer">${escapeHtml(r.source_name || r.source_url || 'source')}</a>`;
+    headerHtml += ` <span class="badge pulse">${(r.confidence||0)}</span></div></div>`;
+    headerHtml += `</div>`;
+    resultContent.innerHTML = headerHtml;
+
+    // prepare summary block but don't show yet
+    const summaryText = r.summary || '';
+    const dos = r.dos || [];
+    const donts = r.donts || [];
+    const links = r.links || [];
+
+    // create summary container
+    const summaryEl = document.createElement('div');
+    summaryEl.className = 'summary';
+    summaryEl.innerHTML = `
+      <div class="assistant">
+        <div class="icon" aria-hidden="true">AG</div>
+        <div class="text" id="summaryText"></div>
+      </div>
+      <div class="small" style="margin-top:8px;color:var(--muted)">Summary (sourced & informational)</div>
+    `;
+    resultContent.appendChild(summaryEl);
+    // animate reveal
+    await sleep(220);
+    summaryEl.classList.add('revealed');
+
+    // type the summary into #summaryText (preserve paragraphs)
+    const summaryTextEl = summaryEl.querySelector('#summaryText');
+    await typeTextWithParagraphs(summaryTextEl, summaryText, 12);
+
+    // append Do's / Don'ts / Links with small slide in
+    if(dos.length){
+      const dosEl = document.createElement('div');
+      dosEl.style.marginTop = '12px';
+      dosEl.innerHTML = `<h4 style="margin:0 0 6px 0">Do's</h4><ul class="small"></ul>`;
+      dosEl.querySelector('ul').innerHTML = dos.map(i => `<li>${escapeHtml(i)}</li>`).join('');
+      dosEl.style.opacity = 0; dosEl.style.transform = 'translateY(8px)';
+      resultContent.appendChild(dosEl);
+      await sleep(160);
+      dosEl.style.transition = 'all .38s cubic-bezier(.2,.9,.3,1)'; dosEl.style.opacity = 1; dosEl.style.transform = 'translateY(0)';
+    }
+    if(donts.length){
+      const dontsEl = document.createElement('div');
+      dontsEl.style.marginTop = '8px';
+      dontsEl.innerHTML = `<h4 style="margin:0 0 6px 0">Don'ts</h4><ul class="small"></ul>`;
+      dontsEl.querySelector('ul').innerHTML = donts.map(i => `<li>${escapeHtml(i)}</li>`).join('');
+      dontsEl.style.opacity = 0; dontsEl.style.transform = 'translateY(8px)';
+      resultContent.appendChild(dontsEl);
+      await sleep(120);
+      dontsEl.style.transition = 'all .38s cubic-bezier(.2,.9,.3,1)'; dontsEl.style.opacity = 1; dontsEl.style.transform = 'translateY(0)';
+    }
+    if(links.length){
+      const linksEl = document.createElement('div');
+      linksEl.style.marginTop = '8px';
+      linksEl.innerHTML = `<h4 style="margin:0 0 6px 0">Surveillance links</h4><ul class="small"></ul>`;
+      linksEl.querySelector('ul').innerHTML = links.map(l => `<li><a class="links" href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(l.text || l.url)}</a></li>`).join('');
+      linksEl.style.opacity = 0; linksEl.style.transform = 'translateY(8px)';
+      resultContent.appendChild(linksEl);
+      await sleep(120);
+      linksEl.style.transition = 'all .38s cubic-bezier(.2,.9,.3,1)'; linksEl.style.opacity = 1; linksEl.style.transform = 'translateY(0)';
+    }
+
+    // show debug and copy controls
+    debugBox.textContent = JSON.stringify(data.queried_sources || {}, null, 2);
+    debugBox.hidden = true;
+    copyBtn.style.display = 'inline-block';
+    copyBtn.onclick = () => {
+      const toCopy = summaryText.trim() || (r.title || '');
+      navigator.clipboard.writeText(toCopy).then(()=> {
+        copyBtn.textContent = 'Copied ✓';
+        setTimeout(()=> copyBtn.textContent = 'Copy Summary', 1400);
+      }).catch(()=> {
+        copyBtn.textContent = 'Copy failed';
+        setTimeout(()=> copyBtn.textContent = 'Copy Summary', 1400);
+      });
+    };
+  }
+
+  // type text but preserve paragraphs and small pauses
+  async function typeTextWithParagraphs(el, text, speed=14){
+    el.innerHTML = '';
+    if(!text) return;
+    // split paragraphs by two newlines
+    const paras = String(text).split(/\n\s*\n/);
+    for(let pIndex=0;pIndex<paras.length;pIndex++){
+      const para = paras[pIndex].trim();
+      const pEl = document.createElement('div');
+      // typewriter per char
+      for(let i=0;i<para.length;i++){
+        pEl.textContent += para[i];
+        // scroll chat container (ensures right panel visible)
+        await sleep(speed);
+      }
+      el.appendChild(pEl);
+      if(pIndex < paras.length - 1) {
+        el.appendChild(document.createElement('br'));
+        await sleep(220);
+      }
+    }
+  }
+
+  // Make request to backend (with typing bubble in chat)
+  async function queryDisease(disease, region=null){
+    const payload = { disease: disease, region: region || null };
+    addTyping();
+    try {
+      const res = await fetch('/disease_info', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      removeTyping();
+      return data;
+    } catch (err) {
+      removeTyping();
+      throw err;
+    }
+  }
+
+  // UI action when sending a message
+  async function sendMessage(text){
+    if(!text || !text.trim()) return;
+    addUserMessage(text);
+    inputBox.value = '';
+    inputBox.disabled = true;
+    sendBtn.disabled = true;
+
+    // small heuristic to extract disease name
+    const disease = extractDiseaseFromText(text);
+    let region = null;
+
+    try {
+      // call backend
+      const data = await queryDisease(disease, region);
+      // create a short bot reply in chat (summarized)
+      if(data && data.found && data.result && data.result.summary){
+        // show a short typed excerpt in chat
+        await addBotTyped( (data.result.summary.slice(0,220) + (data.result.summary.length>220 ? "…" : "")) );
+      } else if(data && data.message){
+        await addBotTyped(data.message);
+      } else {
+        await addBotTyped("I found something — see details on the right.");
+      }
+
+      // reveal the full structured result on the right with animations
+      await renderResultPanel(data);
+    } catch (err) {
+      console.error(err);
+      await addBotTyped("Sorry — I couldn't reach the backend. Try again. (" + (err.message || "error") + ")");
+      resultContent.innerHTML = `<div class="small" style="color:var(--danger)">Error: ${escapeHtml(err.message || "Network error")}</div>`;
+      debugBox.hidden = true;
+    } finally {
+      inputBox.disabled = false;
+      sendBtn.disabled = false;
+      inputBox.focus();
+    }
+  }
+
+  // Very small heuristic to extract disease name from user text.
+  function extractDiseaseFromText(text){
+    const t = text.trim();
+    if(t.split(/\s+/).length <= 4){
+      return t.replace(/^(tell me about |give me info about |what is |info on )/i,'').trim();
+    }
+    const m = t.match(/about\s+(.+)$/i) || t.match(/on\s+(.+)$/i);
+    if(m) return m[1].trim();
+    return t;
+  }
+
+  // Event handlers
+  document.getElementById('sendBtn').addEventListener('click', () => sendMessage(inputBox.value));
+  inputBox.addEventListener('keydown', (e) => {
+    if(e.key === 'Enter' && !e.shiftKey){
+      e.preventDefault();
+      sendMessage(inputBox.value);
+    }
+  });
+
+  // Toggle debug
+  toggleDebug.addEventListener('click', () => {
+    debugBox.hidden = !debugBox.hidden;
+    if(!debugBox.hidden) debugBox.scrollIntoView({behavior:'smooth'});
+  });
+
+  // Quick chips (samples)
+  function addQuickChips(){
+    const chipRow = document.createElement('div');
+    chipRow.style.display='flex'; chipRow.style.gap='8px'; chipRow.style.marginTop='10px';
+    ['dengue','covid','malaria'].forEach(s => {
+      const c = document.createElement('button');
+      c.textContent = s;
+      c.className = 'btn';
+      c.style.padding='6px 10px';
+      c.style.fontSize='13px';
+      c.onclick = ()=> sendMessage(s);
+      chipRow.appendChild(c);
     });
-    const data = await res.json();
-    renderResult(data);
-  } catch (err) {
-    document.getElementById("result").innerHTML = "<pre>" + (err.message || "Error") + "</pre>";
+    document.querySelector('.header').appendChild(chipRow);
   }
-});
 
-function renderResult(data){
-  if(!data) { document.getElementById("result").innerHTML = "<p>No response</p>"; return; }
-  if(!data.found){
-    document.getElementById("result").innerHTML = `<p>${data.message || "No content found."}</p><pre>${JSON.stringify(data.queried_sources,null,2)}</pre>`;
-    return;
-  }
-  const r = data.result;
-  let html = `<h3>${r.title || data.disease}</h3>`;
-  html += `<p class="meta">Source: <a href="${r.source_url}" target="_blank">${r.source_url}</a> · Confidence: ${r.confidence || 0} · Fetched: ${data.fetched_at}</p>`;
-  if(r.summary){
-    html += `<h4>Summary</h4><p>${escapeHtml(r.summary).slice(0,2000)}${r.summary.length>2000 ? "…":""}</p>`;
-  }
-  if(r.dos && r.dos.length){
-    html += `<h4>Do's</h4><ul>`;
-    r.dos.forEach(i => html += `<li>${escapeHtml(i)}</li>`);
-    html += `</ul>`;
-  }
-  if(r.donts && r.donts.length){
-    html += `<h4>Don'ts</h4><ul>`;
-    r.donts.forEach(i => html += `<li>${escapeHtml(i)}</li>`);
-    html += `</ul>`;
-  }
-  if(r.links && r.links.length){
-    html += `<h4>Surveillance links</h4><ul>`;
-    r.links.forEach(l => html += `<li><a href="${l.url}" target="_blank">${escapeHtml(l.text || l.url)}</a></li>`);
-    html += `</ul>`;
-  }
-  html += `<hr><pre>${JSON.stringify(data.queried_sources,null,2)}</pre>`
-  document.getElementById("result").innerHTML = html;
-}
+  // Accessibility: announce new messages minimally
+  const live = document.querySelector('[aria-live="polite"]');
 
-function escapeHtml(s){
-  if(!s) return "";
-  return s.replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
-}
 </script>
 </body>
 </html>
