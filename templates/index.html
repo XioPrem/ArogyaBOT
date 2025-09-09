@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Health Chatbot — India Demo</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; margin: 20px; background:#f7f8fb; color:#111 }
+    .card { background:white; border-radius:10px; padding:18px; box-shadow:0 6px 18px rgba(24,39,75,0.06); max-width:900px; margin:auto }
+    input[type="text"]{ padding:10px; width:60%; border-radius:8px; border:1px solid #ddd }
+    button{ padding:10px 14px; border-radius:8px; border:0; background:#2563eb; color:white; cursor:pointer }
+    .meta { color:#666; font-size:13px }
+    ul { margin-left:18px }
+    pre { background:#111; color:#fff; padding:12px; border-radius:6px; overflow:auto }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>ArogyaGPT</h2>
+    <p class="meta">NCVBDC / NCDC / IDSP sources — informational only.</p>
+
+    <div style="margin-top:12px;">
+      <input id="disease" placeholder="Enter disease (e.g., dengue)" type="text" value="dengue" />
+      <input id="region" placeholder="Region (optional)" type="text" style="margin-left:8px; width:28%" />
+      <button id="ask">Search</button>
+    </div>
+
+    <div id="result" style="margin-top:18px;"></div>
+    <hr />
+  </div>
+
+<script>
+document.getElementById("ask").addEventListener("click", async () => {
+  const d = document.getElementById("disease").value.trim();
+  const region = document.getElementById("region").value.trim();
+  if(!d){ alert("Type a disease name (e.g., dengue)"); return; }
+  const payload = { disease: d, region: region || null }
+  document.getElementById("result").innerHTML = "<p class='meta'>Searching...</p>"
+  try {
+    const res = await fetch("/disease_info", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    renderResult(data);
+  } catch (err) {
+    document.getElementById("result").innerHTML = "<pre>" + (err.message || "Error") + "</pre>";
+  }
+});
+
+function renderResult(data){
+  if(!data) { document.getElementById("result").innerHTML = "<p>No response</p>"; return; }
+  if(!data.found){
+    document.getElementById("result").innerHTML = `<p>${data.message || "No content found."}</p><pre>${JSON.stringify(data.queried_sources,null,2)}</pre>`;
+    return;
+  }
+  const r = data.result;
+  let html = `<h3>${r.title || data.disease}</h3>`;
+  html += `<p class="meta">Source: <a href="${r.source_url}" target="_blank">${r.source_url}</a> · Confidence: ${r.confidence || 0} · Fetched: ${data.fetched_at}</p>`;
+  if(r.summary){
+    html += `<h4>Summary</h4><p>${escapeHtml(r.summary).slice(0,2000)}${r.summary.length>2000 ? "…":""}</p>`;
+  }
+  if(r.dos && r.dos.length){
+    html += `<h4>Do's</h4><ul>`;
+    r.dos.forEach(i => html += `<li>${escapeHtml(i)}</li>`);
+    html += `</ul>`;
+  }
+  if(r.donts && r.donts.length){
+    html += `<h4>Don'ts</h4><ul>`;
+    r.donts.forEach(i => html += `<li>${escapeHtml(i)}</li>`);
+    html += `</ul>`;
+  }
+  if(r.links && r.links.length){
+    html += `<h4>Surveillance links</h4><ul>`;
+    r.links.forEach(l => html += `<li><a href="${l.url}" target="_blank">${escapeHtml(l.text || l.url)}</a></li>`);
+    html += `</ul>`;
+  }
+  html += `<hr><pre>${JSON.stringify(data.queried_sources,null,2)}</pre>`
+  document.getElementById("result").innerHTML = html;
+}
+
+function escapeHtml(s){
+  if(!s) return "";
+  return s.replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m]; });
+}
+</script>
+</body>
+</html>

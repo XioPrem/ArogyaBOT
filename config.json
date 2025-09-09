@@ -1,0 +1,61 @@
+{
+  "sources": [
+    {
+      "id": "ncvbdc_dengue_pdf",
+      "name": "NCVBDC - Dengue Guideline PDF",
+      "type": "pdf",
+      "pdf_url": "https://ncvbdc.mohfw.gov.in/Doc/National%20Guidelines%20for%20Clinical%20Management%20of%20Dengue%20Fever%202023.pdf",
+      "diseases": ["dengue"]
+    },
+    {
+      "id": "ncvbdc_guidelines_page",
+      "name": "NCVBDC Guidelines Index",
+      "type": "page",
+      "page_url": "https://ncvbdc.mohfw.gov.in/index1.php?lang=1&level=1&lid=3686&sublinkid=5899",
+      "diseases": ["dengue","chikungunya"]
+    },
+    {
+      "id": "ncdc_notifications",
+      "name": "NCDC Notifications",
+      "type": "ncdc",
+      "page_url": "https://ncdc.mohfw.gov.in/notifications/",
+      "diseases": []
+    },
+    {
+      "id": "idsp_portal",
+      "name": "IDSP Portal",
+      "type": "idsp",
+      "page_url": "https://idsp.mohfw.gov.in/",
+      "diseases": []
+    },
+    {
+  "id": "mohfw_covid_clinical_2023_pdf",
+  "name": "MoHFW - Clinical Guidance for Management of Adult COVID-19 Patients (05-Jan-2023)",
+  "type": "pdf",
+  "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalGuidanceforManagementofAdultCOVID19Patientsupdatedason05thjan2023.pdf",
+  "diseases": ["covid","covid-19","sars-cov-2"]
+},
+{
+  "id": "mohfw_clinical_protocol_2020_pdf",
+  "name": "MoHFW - Clinical Management Protocol for COVID-19 (older protocol)",
+  "type": "pdf",
+  "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalManagementProtocolforCOVID19dated27062020.pdf",
+  "diseases": ["covid","covid-19"]
+},
+{
+  "id": "ncdc_covid_resources",
+  "name": "NCDC - COVID Resources / Guidelines",
+  "type": "page",
+  "page_url": "https://ncdc.mohfw.gov.in/covid19/",
+  "diseases": ["covid","covid-19"]
+},
+{
+  "id": "icmr_covid_page",
+  "name": "ICMR - COVID resources",
+  "type": "page",
+  "page_url": "https://main.icmr.nic.in/content/covid-19",
+  "diseases": ["covid","covid-19"]
+}
+  ],
+  "default_ttl_seconds": 3600
+}

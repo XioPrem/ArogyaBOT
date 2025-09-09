@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+auth_info/
+*.pyc
+*.log
+*.sqlite3
+.env
