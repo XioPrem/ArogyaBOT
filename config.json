@@ -29,33 +29,33 @@
       "diseases": []
     },
     {
-  "id": "mohfw_covid_clinical_2023_pdf",
-  "name": "MoHFW - Clinical Guidance for Management of Adult COVID-19 Patients (05-Jan-2023)",
-  "type": "pdf",
-  "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalGuidanceforManagementofAdultCOVID19Patientsupdatedason05thjan2023.pdf",
-  "diseases": ["covid","covid-19","sars-cov-2"]
-},
-{
-  "id": "mohfw_clinical_protocol_2020_pdf",
-  "name": "MoHFW - Clinical Management Protocol for COVID-19 (older protocol)",
-  "type": "pdf",
-  "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalManagementProtocolforCOVID19dated27062020.pdf",
-  "diseases": ["covid","covid-19"]
-},
-{
-  "id": "ncdc_covid_resources",
-  "name": "NCDC - COVID Resources / Guidelines",
-  "type": "page",
-  "page_url": "https://ncdc.mohfw.gov.in/covid19/",
-  "diseases": ["covid","covid-19"]
-},
-{
-  "id": "icmr_covid_page",
-  "name": "ICMR - COVID resources",
-  "type": "page",
-  "page_url": "https://main.icmr.nic.in/content/covid-19",
-  "diseases": ["covid","covid-19"]
-}
+      "id": "mohfw_covid_clinical_2023_pdf",
+      "name": "MoHFW - Clinical Guidance for Management of Adult COVID-19 Patients (05-Jan-2023)",
+      "type": "pdf",
+      "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalGuidanceforManagementofAdultCOVID19Patientsupdatedason05thjan2023.pdf",
+      "diseases": ["covid","covid-19","sars-cov-2"]
+    },
+    {
+      "id": "mohfw_clinical_protocol_2020_pdf",
+      "name": "MoHFW - Clinical Management Protocol for COVID-19 (older protocol)",
+      "type": "pdf",
+      "pdf_url": "https://covid19dashboard.mohfw.gov.in/pdf/ClinicalManagementProtocolforCOVID19dated27062020.pdf",
+      "diseases": ["covid","covid-19"]
+    },
+    {
+      "id": "ncdc_covid_resources",
+      "name": "NCDC - COVID Resources / Guidelines",
+      "type": "page",
+      "page_url": "https://ncdc.mohfw.gov.in/covid19/",
+      "diseases": ["covid","covid-19"]
+    },
+    {
+      "id": "icmr_covid_page",
+      "name": "ICMR - COVID resources",
+      "type": "page",
+      "page_url": "https://main.icmr.nic.in/content/covid-19",
+      "diseases": ["covid","covid-19"]
+    }
   ],
   "default_ttl_seconds": 3600
 }
